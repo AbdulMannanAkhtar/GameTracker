@@ -2,20 +2,31 @@ package com.example.gametracker
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import io.github.jan.supabase.auth.OtpType
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 private var passwordPopup: PopupWindow? = null
 
@@ -44,8 +55,11 @@ class SignupActivity : AppCompatActivity() {
         passwordToggle(password, viewPassword1)
         passwordToggle(password2, viewPassword2)
 
+        val signupButton = findViewById<Button>(R.id.SignupButton2)
 
-
+        signupButton.setOnClickListener {
+            createAccount()
+        }
 
 
 
@@ -153,6 +167,64 @@ class SignupActivity : AppCompatActivity() {
         }
 
         progressBar.progress = score
+
+    }
+
+    private fun createAccount()
+    {
+        val usernameInput = findViewById<EditText>(R.id.createUsername)
+        val emailInput = findViewById<EditText>(R.id.email)
+        val passwordInput = findViewById<EditText>(R.id.password)
+        val confirmPasswordInput = findViewById<EditText>(R.id.password2)
+
+        val username = usernameInput.text.toString().trim()
+        val email = emailInput.text.toString().trim()
+        val password = passwordInput.text.toString()
+        val passwordConfirm = confirmPasswordInput.text.toString()
+
+        if(username.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty())
+        {
+            Toast.makeText(this, "Please fill all the fields to create account", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(password != passwordConfirm)
+        {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            try{
+                SupabaseClient.client.auth.signUpWith(Email)
+                {
+                    this.email = email
+                    this.password = password
+                }
+
+                val userId = SupabaseClient.client.auth.currentUserOrNull()?.id
+
+                if(userId == null)
+                {
+                    Toast.makeText(this@SignupActivity, "Error! Signup failed", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                SupabaseClient.client.postgrest["profiles"].insert(
+                    Profile(
+                        id = userId,
+                        username = username
+                    )
+                )
+                Toast.makeText(this@SignupActivity, "Account created successfully!", Toast.LENGTH_SHORT).show()
+
+            } catch (e: Exception)
+            {
+                //Log.e("SIGNUP", "signup failure", e)
+                Toast.makeText(this@SignupActivity, e.message, Toast.LENGTH_LONG).show()
+            }
+        }
+
 
     }
 
