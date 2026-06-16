@@ -218,6 +218,9 @@ class SignupActivity : AppCompatActivity() {
                 )
                 Toast.makeText(this@SignupActivity, "Account created successfully!", Toast.LENGTH_SHORT).show()
 
+                val intent = Intent(this@SignupActivity, LoginActivity::class.java)
+                startActivity(intent)
+
             } catch (e: Exception)
             {
                 //Log.e("SIGNUP", "signup failure", e)

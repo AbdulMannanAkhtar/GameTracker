@@ -38,13 +38,13 @@
             android:padding="35dp">
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:gravity="left"
-                android:hint="Username"
+                android:hint="Enter your email"
                 android:textColorHint="@color/tagline"
                 android:inputType="text"
                 android:textColor="@color/tagline"/>
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="left"
-                    android:hint="Create a Password"
+                    android:hint="Enter your password"
                     android:textColorHint="@color/tagline"
                     android:inputType="textPassword"
                     android:textColor="@color/tagline"/>
@@ -87,8 +87,7 @@
                 android:textColor="@color/tagline"
                 android:textStyle="bold"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="30dp"
-                android:onClick="login"/>
+                android:layout_marginBottom="30dp"/>
 
 
         </LinearLayout>
